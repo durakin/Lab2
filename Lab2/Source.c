@@ -1,8 +1,15 @@
 #include <stdio.h>
 #include <windows.h>
 #include <malloc.h>
+#include <stdbool.h>
 
-int *obj, razmer;
+typedef struct
+{
+	int  razmer;
+	double *obj;
+	bool isFilled;
+} objarray;
+
 int VDCel(char name[100])
 {
 	int i, done = 0;
@@ -101,20 +108,34 @@ double VDVesh(char name[100])
 	}
 	return (atof(s));
 }
-void Customfill()
+void Customfill(objarray *object)
 {
-	free(obj);
+	//free(object->obj); = free((*object).obj);
+	if (object->isFilled)
+	{
+		free(object->obj);
+	}
 	int i;
-	razmer = VDCelPol("размера массива");
-	obj = (int*)malloc(razmer * sizeof(double));
+	//(*object).razmer = VDCelPol("размера массива");
+	object->razmer = VDCelPol("размера массива");
+	object->obj = (double*)malloc(object->razmer * sizeof(double));
 	system("cls");
 	printf("Далее поочередно вводите элементы массива.\n");
-	for (i = 0; i < razmer; i++) obj[i] = VDCel("элемента массива");
+	for (i = 0; i < object->razmer; i++)
+	{
+		object->obj[i] = VDCel("элемента массива");
+	}
+	object->isFilled = true;
 }
 int main()
 {
 	SetConsoleOutputCP(1251);
 	SetConsoleCP(1251);
+
+	objarray object;
+	object.isFilled = false;
+	object.razmer = -1;
+	object.obj = NULL;
 
 	int k = -1, vih, n = 0;
 	while (k != 5)
@@ -125,19 +146,28 @@ int main()
 		{
 			system("cls");
 			/*printf("Введите количество элементов массива.\n");*/
-			Customfill();
+			Customfill(&object);
 		}
 		if (k == 3)
 		{
+
 			system("cls");
-			printf("Элементы массива:\n");
-			for (int i = 0; i < razmer; i++)
-				printf("%f ", obj[i]);
+			if (object.isFilled)
+			{
+				printf("Элементы массива:\n");
+				for (int i = 0; i < object.razmer; i++)
+					printf("%lf ", object.obj[i]);
+			}
+			else
+			{
+				printf("Массив не был заполнен.\n");
+			}
 			system("pause");
 		}
-		
+
 	}
 	printf("Работа программы завершена.\n");
+	free(object.obj);
 	getchar();
 	getchar();
 	return 0;
