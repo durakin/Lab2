@@ -3,6 +3,7 @@
 #include <malloc.h>
 #include <stdbool.h>
 #include <time.h>
+
 typedef struct
 {
 	int  razmer;
@@ -42,8 +43,9 @@ int VDCel(char name[100])
 		if (s[i] <= 0) done++;
 
 	}
-	return (atoi(s));
+	return atoi(s);
 }
+
 int VDCelPol(char name[100])
 {
 	int i, done = 0;
@@ -72,8 +74,9 @@ int VDCelPol(char name[100])
 		}
 		if (s[i] <= 0) done++;
 	}
-	return (atoi(s));
+	return atoi(s);
 }
+
 double VDVesh(char name[100])
 {
 	int i, zapyat, done = 0;
@@ -107,8 +110,9 @@ double VDVesh(char name[100])
 		}
 		if (s[i] <= 0) done++;
 	}
-	return (atof(s));
+	return atof(s);
 }
+
 void Customfill(objarray *object)
 {
 	//free(object->obj); = free((*object).obj);
@@ -132,6 +136,7 @@ void Customfill(objarray *object)
 	}
 	object->isFilled = true;
 }
+
 void RandomFill(objarray *object)
 {
 	srand((unsigned)time(NULL));
@@ -151,6 +156,7 @@ void RandomFill(objarray *object)
 	}
 	object->isFilled = true;
 }
+
 void obrabotka(objarray *object)
 {
 	int i;
@@ -175,10 +181,11 @@ void obrabotka(objarray *object)
 		}
 	}
 }
+
 int main()
 {
-	SetConsoleOutputCP(1251);
-	SetConsoleCP(1251);
+	SetConsoleOutputCP(CP_UTF8);
+	SetConsoleCP(CP_UTF8);
 
 	objarray object;
 	object.isFilled = false;
@@ -223,7 +230,7 @@ int main()
 		if (k == 4)
 		{
 			system("cls");
-			if (object.isFilled && object.razmer>1)
+			if (object.isFilled && object.razmer > 1)
 			{
 				obrabotka(&object);
 				printf("Массив был обработан.\n");
