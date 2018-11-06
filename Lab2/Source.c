@@ -2,7 +2,7 @@
 #include <windows.h>
 #include <malloc.h>
 
-int *obj, razmer;
+double *obj, razmer;
 int VDCel(char name[100])
 {
 	int i, done = 0;
