@@ -1,13 +1,22 @@
 #include <stdio.h>
 #include <windows.h>
 #include <malloc.h>
+#include <stdbool.h>
+#include <time.h>
 
-int *obj, razmer;
+typedef struct
+{
+	int  razmer;
+	double *obj;
+	bool isFilled;
+	double minimal;
+} objarray;
+
 int VDCel(char name[100])
 {
 	int i, done = 0;
 	char s[100];
-	printf("Введите значение %s\n", name);
+	printf("Р’РІРµРґРёС‚Рµ Р·РЅР°С‡РµРЅРёРµ %s\n", name);
 	while (done == 0)
 	{
 		for (i = 0; i < 99; i++)
@@ -26,7 +35,7 @@ int VDCel(char name[100])
 			if (!(s[i] >= '0'  && s[i] <= '9'))
 			{
 				//system("cls");
-				printf("Некорректное значение. Пожалуйста, повторите ввод %s.\n", name);
+				printf("РќРµРєРѕСЂСЂРµРєС‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ. РџРѕР¶Р°Р»СѓР№СЃС‚Р°, РїРѕРІС‚РѕСЂРёС‚Рµ РІРІРѕРґ %s.\n", name);
 				break;
 			}
 			i++;
@@ -34,13 +43,14 @@ int VDCel(char name[100])
 		if (s[i] <= 0) done++;
 
 	}
-	return (atoi(s));
+	return atoi(s);
 }
+
 int VDCelPol(char name[100])
 {
 	int i, done = 0;
 	char s[100];
-	printf("Введите значение %s\n", name);
+	printf("Р’РІРµРґРёС‚Рµ Р·РЅР°С‡РµРЅРёРµ %s\n", name);
 	while (done == 0)
 	{
 		for (i = 0; i < 99; i++)
@@ -54,18 +64,19 @@ int VDCelPol(char name[100])
 
 		while (s[i] > 0)
 		{
-			if (!(s[i] >= '1'  && s[i] <= '9'))
+			if (!(s[i] >= '0'  && s[i] <= '9') || (s[i] == '0' && i == 0))
 			{
 				//system("cls");
-				printf("Некорректное значение. Пожалуйста, повторите ввод %s.\n", name);
+				printf("РќРµРєРѕСЂСЂРµРєС‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ. РџРѕР¶Р°Р»СѓР№СЃС‚Р°, РїРѕРІС‚РѕСЂРёС‚Рµ РІРІРѕРґ %s.\n", name);
 				break;
 			}
 			i++;
 		}
 		if (s[i] <= 0) done++;
 	}
-	return (atoi(s));
+	return atoi(s);
 }
+
 double VDVesh(char name[100])
 {
 	int i, zapyat, done = 0;
@@ -91,7 +102,7 @@ double VDVesh(char name[100])
 			if (s[i] == '.') zapyat++;
 			if (!(s[i] >= '0'  && s[i] <= '9') && s[i] != '.' || s[i] == '.' && zapyat > 1)
 			{
-				printf("Некорректное значение %s. Пожалуйста, повторите ввод значения %s.\n", name, name);
+				printf("РќРµРєРѕСЂСЂРµРєС‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ %s. РџРѕР¶Р°Р»СѓР№СЃС‚Р°, РїРѕРІС‚РѕСЂРёС‚Рµ РІРІРѕРґ Р·РЅР°С‡РµРЅРёСЏ %s.\n", name, name);
 				break;
 			}
 			i++;
@@ -99,46 +110,143 @@ double VDVesh(char name[100])
 		}
 		if (s[i] <= 0) done++;
 	}
-	return (atof(s));
+	return atof(s);
 }
-void Customfill()
+
+void Customfill(objarray *object)
 {
-	free(obj);
+	//free(object->obj); = free((*object).obj);
+	if (object->isFilled)
+	{
+		free(object->obj);
+	}
 	int i;
-	razmer = VDCelPol("размера массива");
-	obj = (int*)malloc(razmer * sizeof(double));
+	//(*object).razmer = VDCelPol("СЂР°Р·РјРµСЂР° РјР°СЃСЃРёРІР°");
+	object->razmer = VDCelPol("СЂР°Р·РјРµСЂР° РјР°СЃСЃРёРІР°");
+	object->obj = (double*)malloc(object->razmer * sizeof(double));
 	system("cls");
-	printf("Далее поочередно вводите элементы массива.\n");
-	for (i = 0; i < razmer; i++) obj[i] = VDCel("элемента массива");
+	printf("Р”Р°Р»РµРµ РїРѕРѕС‡РµСЂРµРґРЅРѕ РІРІРѕРґРёС‚Рµ СЌР»РµРјРµРЅС‚С‹ РјР°СЃСЃРёРІР°.\n");
+	for (i = 0; i < object->razmer; i++)
+	{
+		object->obj[i] = VDCel("СЌР»РµРјРµРЅС‚Р° РјР°СЃСЃРёРІР°");
+		if (object->minimal < object->obj[i])
+		{
+			object->minimal = object->obj[i];
+		}
+	}
+	object->isFilled = true;
 }
+
+void RandomFill(objarray *object)
+{
+	srand((unsigned)time(NULL));
+	if (object->isFilled)
+	{
+		free(object->obj);
+	}
+	object->razmer = VDCelPol("СЂР°Р·РјРµСЂР° РјР°СЃСЃРёРІР°");
+	object->obj = (double*)malloc(object->razmer * sizeof(double));
+	for (int i = 0; i < object->razmer; i++)
+	{
+		object->obj[i] = (rand() % 201) - 100;
+		if (object->minimal < object->obj[i])
+		{
+			object->minimal = object->obj[i];
+		}
+	}
+	object->isFilled = true;
+}
+
+void obrabotka(objarray *object)
+{
+	int i;
+	double sum = 0, sred;
+	for (i = 0; i < object->razmer; i++)
+	{
+		if (object->obj[i] < object->minimal)
+		{
+			object->minimal = object->obj[i];
+		}
+		if ((i + 1) % 2 == 0)
+		{
+			sum += object->obj[i];
+		}
+		sred = sum / (object->razmer / 2);
+	}
+	for (i = 0; i < object->razmer; i++)
+	{
+		if (object->obj[i] == object->minimal)
+		{
+			object->obj[i] = sred;
+		}
+	}
+}
+
 int main()
 {
-	SetConsoleOutputCP(1251);
-	SetConsoleCP(1251);
+	SetConsoleOutputCP(CP_UTF8);
+	SetConsoleCP(CP_UTF8);
+
+	objarray object;
+	object.isFilled = false;
+	object.razmer = -1;
+	object.obj = NULL;
+	object.minimal = 0;
 
 	int k = -1, vih, n = 0;
 	while (k != 5)
 	{
-		printf("Меню пользователя:\n1. Ввести элементы массива вручную.\n2. Заполнить массив случайными числами.\n3. Вывести массив на экран.\n4. заменить минимальное значение элементов массива средним арифметическим его элементов, находящихся на четных позициях.\n5. Выход.\n");
-		k = VDCelPol("номера команды");
+		system("cls");
+		printf("РњРµРЅСЋ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ:\n1. Р’РІРµСЃС‚Рё СЌР»РµРјРµРЅС‚С‹ РјР°СЃСЃРёРІР° РІСЂСѓС‡РЅСѓСЋ.\n2. Р—Р°РїРѕР»РЅРёС‚СЊ РјР°СЃСЃРёРІ СЃР»СѓС‡Р°Р№РЅС‹РјРё С‡РёСЃР»Р°РјРё.\n3. Р’С‹РІРµСЃС‚Рё РјР°СЃСЃРёРІ РЅР° СЌРєСЂР°РЅ.\n4. Р·Р°РјРµРЅРёС‚СЊ РјРёРЅРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ СЌР»РµРјРµРЅС‚РѕРІ РјР°СЃСЃРёРІР° СЃСЂРµРґРЅРёРј Р°СЂРёС„РјРµС‚РёС‡РµСЃРєРёРј РµРіРѕ СЌР»РµРјРµРЅС‚РѕРІ, РЅР°С…РѕРґСЏС‰РёС…СЃСЏ РЅР° С‡РµС‚РЅС‹С… РїРѕР·РёС†РёСЏС….\n5. Р’С‹С…РѕРґ.\n");
+		k = VDCelPol("РЅРѕРјРµСЂР° РєРѕРјР°РЅРґС‹");
 		if (k == 1)
 		{
 			system("cls");
-			/*printf("Введите количество элементов массива.\n");*/
-			Customfill();
+			Customfill(&object);
+			printf("Р’РІРѕРґ РјР°СЃСЃРёРІР° Р·Р°РІРµСЂС€РµРЅ.\n");
+		}
+		if (k == 2)
+		{
+			system("cls");
+			RandomFill(&object);
+			printf("РњР°СЃСЃРёРІ Р±С‹Р» Р·Р°РїРѕР»РЅРµРЅ СЃР»СѓС‡Р°Р№РЅС‹РјРё С‡РёСЃР»Р°РјРё РІ РґРёР°РїРѕР·РѕРЅРµ РѕС‚ -100 РґРѕ 100.\n");
 		}
 		if (k == 3)
 		{
 			system("cls");
-			printf("Элементы массива:\n");
-			for (int i = 0; i < razmer; i++)
-				printf("%f ", obj[i]);
-			system("pause");
+			if (object.isFilled)
+			{
+				printf("Р­Р»РµРјРµРЅС‚С‹ РјР°СЃСЃРёРІР°:\n");
+				for (int i = 0; i < object.razmer; i++)
+				{
+					printf("%lf\n", object.obj[i]);
+				}
+			}
+			else
+			{
+				printf("РњР°СЃСЃРёРІ РЅРµ Р±С‹Р» Р·Р°РїРѕР»РЅРµРЅ.\n");
+			}
 		}
-		
+		if (k == 4)
+		{
+			system("cls");
+			if (object.isFilled && object.razmer > 1)
+			{
+				obrabotka(&object);
+				printf("РњР°СЃСЃРёРІ Р±С‹Р» РѕР±СЂР°Р±РѕС‚Р°РЅ.\n");
+			}
+			else
+			{
+				printf("РњР°СЃСЃРёРІ РЅРµ Р±С‹Р» Р·Р°РїРѕР»РЅРµРЅ РёР»Рё СЃРѕСЃС‚РѕРёС‚ РёР· РѕРґРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°.\n");
+			}
+		}
+		if (k != 5)
+		{
+			getchar();
+			getchar();
+		}
 	}
-	printf("Работа программы завершена.\n");
-	getchar();
-	getchar();
+	printf("Р Р°Р±РѕС‚Р° РїСЂРѕРіСЂР°РјРјС‹ Р·Р°РІРµСЂС€РµРЅР°.\n");
+	free(object.obj);
 	return 0;
 }
